@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div id="app">
+        <blog-list/>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+    <script>
+
+        Vue.component('blog', {
+            props: ['info'],
+            template: `
+                <div>
+                    <p>{{ info.title }} 
+                        ( 
+                            <span v-for="tag in info.tags"> {{ tag }}
+                            </span>
+                        )</p>
+                </div>
+            `,
+        });
+
+        Vue.component('blog-detail', {
+            props: ['info'],
+            template: `
+                <div>
+                    <h3>{{ info.title }}</h3>
+                    <p>{{ info.content }}</p>
+                </div>
+            `,
+        });        
+
+        Vue.component('tag-list', {
+            props: { },
+
+            data() {
+                return {
+                    nameTags: ['Design', 'Interior', 'Living', 'Badroom', 'Office', 'Building'],
+                    currentTag: 'Design'
+                }
+            },
+
+            methods: {
+                chooseTag(nameTag) {
+                    this.currentTag =  nameTag   
+                    this.$emit('selectTag', nameTag)
+                }
+            },
+
+            template: `
+                <div>
+                    <button v-for="nameTag in nameTags"
+                        :key="nameTag.id"
+                        @click="chooseTag(nameTag)">{{ nameTag }}
+                    </button>
+                    <p>selected tag: {{ currentTag }}<p/>
+                </div>
+            `,
+        });           
+
+        Vue.component('blog-list', {
+            props: { },
+
+            data() {
+                return {
+                    articles: [
+                        {
+                            id: 1,
+                            title: 'Let’s Get Solution For Building',
+                            content: 'Let’s Get Solution For Building. Let’s Get Solution For Building. Let’s Get Solution For Building.',
+                            tags: ['Building', 'Design'],
+                        },
+                        {
+                            id: 2,
+                            title: 'Low Cost Latest Invented Interior Designing Ideas',
+                            content: 'Low Cost Latest Invented Interior Designing Ideas. Low Cost Latest Invented Interior Designing Ideas. Low Cost Latest Invented Interior Designing Ideas.',
+                            tags: ['Living', 'Interior', 'Design'],
+                        },
+                        {
+                            id: 3,
+                            title: 'Best Interior Solution',
+                            content: 'Best Interior Solution. Best Interior Solution. Best Interior Solution.',
+                            tags: ['Interior', 'Design'],
+                        },
+                        {
+                            id: 4,
+                            title: 'Best For Any Office & Business Interior Solution',
+                            content: 'Best For Any Office & Business Interior Solution. Best For Any Office & Business Interior Solution. Best For Any Office & Business Interior Solution.',
+                            tags: ['Office', 'Interior', 'Design'],
+                        },
+                        {
+                            id: 5,
+                            title: 'Badroom Red Solution',
+                            content: 'Badroom Red Solution. Badroom Red Solution. Badroom Red Solution.',
+                            tags: ['Badroom', 'Interior', 'Design'],
+                        },      
+                        {
+                            id: 6,
+                            title: 'Our choice',
+                            content: 'Our choice. Our choice. Our choice',
+                            tags: ['Living', 'Interior', 'Design'],
+                        }                                                                                                                 
+                    ],
+                    selectedTag: 'Design',
+                }
+            },
+
+            methods: {
+                selectTag(nameTag) {
+                    this.selectedTag = nameTag;
+                }
+            },
+
+            computed: {
+                latestArticle() {
+                    return this.articles.reduce(function (prev, curr) {
+                        return prev.id > curr.id ? prev : curr
+                    })
+                },
+                
+                filteredArcticles() {
+                    return this.articles.filter(item => item.tags.includes(this.selectedTag))
+                }
+            },
+
+            template: `
+                <div>
+                    <tag-list
+                        @selectTag="selectTag"
+                    >
+                    </tag-list>
+
+                    <h2>Последняя статья</h2>
+                    <blog-detail
+                        :info="latestArticle"
+                    ></blog-detail>
+
+                    <h2>Список статей</h2>
+                    <blog
+                        v-for="article in filteredArcticles"
+                        :info="article"
+                        :key="article.id"
+                    ></blog>
+                </div>    
+            `            
+        });
+
+        new Vue ({
+            el: '#app',
+            data: {
+            }
+        });
+    </script>
+</body>
+</html>
